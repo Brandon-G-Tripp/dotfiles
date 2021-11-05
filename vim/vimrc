@@ -1,0 +1,206 @@
+set encoding=utf-8
+set nocompatible " Required by vundle
+filetype off 	 " Required by vundle
+
+" Display all matching files when we tab complete 
+set wildmenu
+set wildmode=full
+
+"===========================================================
+" Vim-Plug Stuff
+" ===========================================================
+
+
+
+
+" Specify a directory for plugins
+" - For Neovim: stdpath('data') . '/plugged'
+" - Avoid using standard Vim directory names like 'plugin'
+call plug#begin('~/.vim/plugged')
+
+" Make sure you use single quotes
+Plug 'simnalamburt/vim-mundo'
+Plug 'nathanaelkane/vim-indent-guides'
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
+Plug 'tpope/vim-surround'
+Plug 'tpope/vim-repeat'
+Plug 'tpope/vim-commentary'
+Plug 'MaxMEllon/vim-jsx-pretty'
+Plug 'leafgarland/typescript-vim'
+Plug 'pangloss/vim-javascript'
+Plug 'drewtempelmeyer/palenight.vim'
+Plug 'christoomey/vim-tmux-navigator'
+Plug 'junegunn/vim-peekaboo'
+Plug 'jxnblk/vim-mdx-js'
+Plug 'elixir-editors/vim-elixir'
+Plug 'rust-lang/rust.vim'
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+let g:coc_global_extensions = [
+    \ 'coc-tsserver',
+    \ ]
+" Initialize plugin system
+call plug#end()
+
+"============================================================================
+" Plugin in settings
+"============================================================================
+
+
+"================================================================================
+" This needs to be looked into
+"================================================================================
+" Settings to use ctags to jump between tags
+" Create the `tags` file 
+command! MakeTags !ctags -R
+" Use ^} to jump to tag under cursor
+" Use g^] for ambiguous tags
+" Use ^t to jump back up the tag stack
+
+
+" Setting mapping of fzf plug to ctrlP setup
+nmap <C-p> :FZF<CR>
+" map leader p for in file search
+nnoremap <silent> <Leader>p :Rg<CR> 
+" Setting to allow highlighting indent guides
+let g:indent_guides_enable_on_vim_startup = 1
+" Look at changing colors later
+"autocmd VimEnter,Colorscheme * :hi IndentGuidesOdd  guibg=red   ctermbg=3
+"autocmd VimEnter,Colorscheme * :hi IndentGuidesEven guibg=green ctermbg=4
+
+" Enable persistent undo so that undo history persists across vim sessions
+set undofile
+set undodir=~/.vim/undo_dir
+
+" Make Coc use <cr> to confirm completion
+inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+
+" Use <tab> and <S-Tab> to navigate completion list
+
+inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+
+" Coc tsserver keys for types
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
+" Use K to show documentation in preview window and function for it
+
+nnoremap <silent> K :call <SID>show_documentation()<CR>
+
+function! s:show_documentation()
+  if (index(['vim','help'], &filetype) >= 0)
+    execute 'h '.expand('<cword>')
+  elseif (coc#rpc#ready())
+    call CocActionAsync('doHover')
+  else
+    execute '!' . &keywordprg . " " . expand('<cword>')
+  endif
+endfunction
+" Set tab to cycle through the CoC autocomplete suggestion list
+" use <tab> for trigger completion and navigate to the next complete item
+
+" function! s:check_back_space() abort
+"     let col = col('.') - 1
+"     return !col || getline('.')[col - 1]  =~ '\s'
+" endfunction
+
+" inoremap <silent><expr> <Tab>
+"     \ pumvisible() ? "\<C-n>" :
+"     \ <SID>check_back_space() ? "\<Tab>" :
+"     \ coc#refresh()
+"============================================================================
+" Mappings for Vim keys
+"============================================================================
+
+
+	" Easy access to the start of the line
+
+nmap 0 ^
+
+" Set leader from \ to <Space>, set before others
+
+let mapleader = "\<Space>"
+
+" Split edit your vimrc. Type space, v, r in sequence to trigger
+nmap <leader>vr :sp $MYVIMRC<cr>
+
+"Source $MYVIMRC to reload settings
+nmap <leader>so :source $MYVIMRC<cr> 
+
+" Mapping to turn of search highlighting
+nnoremap <esc><esc> :noh<return><esc>
+" <Ctl - [>
+
+"  Insert Mode Mappings
+" mapping to insert undo breakpoints when using ctl - u & ctl - w in insert
+" mode
+inoremap <c-u> <c-g>u<c-u>
+inoremap <c-w> <c-g>u<c-w>
+
+" jk or kj to exit insert mode
+imap jk <esc>:w<cr>
+imap kj <esc>:w<cr>
+
+"===========================================================================
+" General Vim Settings
+"===========================================================================
+
+" Setting color scheme
+colorscheme palenight
+set background=dark
+"Setting tab line guides
+set list lcs=tab:\|\ 
+"Set line numbers
+set relativenumber number
+set tabstop=2
+set softtabstop=2
+set shiftwidth=2
+set expandtab
+set noswapfile  "Disable the swap file
+set hlsearch " Highlight all results
+set ignorecase smartcase  " Ignore case in search when lower case and case sentive if an uppercase
+set incsearch " show search results as you type
+set history=200 " set history to 200 from 20 for ex cmd history
+" Set vim to user regrep instead of grep for terminal search
+set grepprg=rg\ --vimgrep\ --smart-case\ --follow
+" Set hidden to not force save on buffer change
+set hidden
+" Set clipboard to paste from external with p
+set clipboard=unnamed
+"Settings for syntax highlighting
+syntax on " hightlight syntax
+filetype plugin on
+filetype plugin indent on
+" Settings for completion of parenth, etc. ( use ctrl + v before these items
+" to escape )
+
+inoremap " ""<left>
+inoremap ' ''<left>
+inoremap ( ()<left>
+inoremap [ []<left>
+inoremap { {}<left>
+inoremap {<CR> {<CR>}<ESC>O
+inoremap {;<CR> {<CR>};<ESC>O
+
+" Mapping for vim cmd %% to edit as arg to expand to active buffer current
+" path can be used with EX cmds (edit, write, saveas, read)
+
+cnoremap <expr> %% getcmdtype() == ':' ? expand('%:h').'/' : '%%'
+
+" =========================================================================
+" " Tmux and Vim Integreation
+" =========================================================================
+" automatically rebalance windows on vim resize
+autocmd VimResized * :wincmd =
+
+" zoom a vim pane, <C-w>= to re-balance
+nnoremap <leader>- :wincmd _<cr>:wincmd \|<cr>
+nnoremap <leader>= :wincmd =<cr>
+
+
+highlight LineNr term=bold cterm=NONE ctermfg=white ctermbg=NONE gui=NONE guifg=DarkGrey guibg=NONE
+set tags=tags
+
+hi Comment	ctermfg=LightBlue 

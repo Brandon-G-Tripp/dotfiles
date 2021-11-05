@@ -1,0 +1,11 @@
+#!/bin/sh
+#
+# Script to change current pane to dir from pane number.
+
+DIR=$(tmux display-message -p -F "#{pane_current_path}" -t$1 | awk -F'/Users/brandontripp/' '{print $2 }') 
+tmux last-pane
+tmux last-pane
+cd 
+cd "$DIR"
+$SHELL # This makes the script close the subshell and act on this directory
+exit 
