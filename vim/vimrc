@@ -19,6 +19,9 @@ set wildmode=full
 call plug#begin('~/.vim/plugged')
 
 " Make sure you use single quotes
+
+Plug 'michal-h21/vimwiki-sync'
+Plug 'vimwiki/vimwiki'
 Plug 'simnalamburt/vim-mundo'
 Plug 'nathanaelkane/vim-indent-guides'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
@@ -50,6 +53,7 @@ call plug#end()
 "================================================================================
 " This needs to be looked into
 "================================================================================
+
 " Settings to use ctags to jump between tags
 " Create the `tags` file 
 command! MakeTags !ctags -R
@@ -57,13 +61,20 @@ command! MakeTags !ctags -R
 " Use g^] for ambiguous tags
 " Use ^t to jump back up the tag stack
 
+" Settings for vimwiki
+" let g:vimwiki_list = [{'path': '~/PersonalWiki', 'syntax': 'markdown', 'ext': '.md', 'index': 'Home'}]
+let g:vimwiki_global_ext = 0
 
 " Setting mapping of fzf plug to ctrlP setup
 nmap <C-p> :FZF<CR>
+" Set mapping for fzf to search only vimwiki"
+nmap <Leader>wp :Files ~/vimwiki/<CR>
 " map leader p for in file search
 nnoremap <silent> <Leader>p :Rg<CR> 
 " Setting to allow highlighting indent guides
+
 let g:indent_guides_enable_on_vim_startup = 1
+
 " Look at changing colors later
 "autocmd VimEnter,Colorscheme * :hi IndentGuidesOdd  guibg=red   ctermbg=3
 "autocmd VimEnter,Colorscheme * :hi IndentGuidesEven guibg=green ctermbg=4
