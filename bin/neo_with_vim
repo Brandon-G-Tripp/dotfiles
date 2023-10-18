@@ -1,0 +1,6 @@
+#!/bin/sh
+#
+XDG_CONFIG_HOME=~/code/dotfiles/vim XDG_DATA_HOME=~/code/dotfiles/vim nvim
+
+# below is the example 
+# XDG_CONFIG_HOME=~/my-envs/config XDG_DATA_HOME=~/my-envs/data nvim
