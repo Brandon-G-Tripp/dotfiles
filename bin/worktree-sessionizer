@@ -1,0 +1,28 @@
+#!/usr/bin/env zsh
+
+search_worktrees() {
+    local current_dir=$(pwd)
+    local parent_dir=$(dirname "$current_dir")
+
+    find "$current_dir" "$parent_dir" -maxdepth 1 -type d -name "worktrees" -prune -o -type d -print
+} 
+
+# Search for worktrees and select one using fzf
+worktree=$(search_worktrees | fzf)
+
+if [ -n "$worktree" ]; then 
+    # Extract the worktree name from the selected path
+    worktree_name=$(basename "$worktree")
+
+    # Check if a tmux window with the same name already exists 
+    if ! tmux list-windows -F '#{window_name}' | grep -q "^$worktree_name\$"; then
+        # create a new tmux window with the worktree name and change to the worktree directory
+        tmux new-window -n "$worktree_name" -c "$worktree"
+    else
+        # if a window with the same name exists switch to that window 
+        tmux select-window -t "$worktree_name"
+    fi
+
+    # Set focus to the newly created or selected window
+    tmux select_window -t "$worktree_name"
+fi
