@@ -1,0 +1,150 @@
+return {}
+-- return {
+--
+--   {
+--     "neovim/nvim-lspconfig",
+--     dependencies = {
+--       "saghen/blink.cmp",
+--       "folke/lazydev.nvim",
+--       -- ft = "lua", -- only load on lua files
+--       opts = {
+--         library = {
+--           -- see the config section for details
+--           -- load luvit types when the `vim.uv` word is found
+--           { path = "${3rd}/luv/library", words = { "vim%.uv" } },
+--         },
+--       },
+--     },
+--     opts = {
+--       servers = {
+--         lua_ls = {},
+--         gopls = {
+--           settings = {
+--             gopls = {
+--               analyses = {
+--                 nilness = true,
+--                 unusedparams = true,
+--                 unreachable = true,
+--                 shadow = true,
+--                 unusedwrite = true,
+--                 useany = true,
+--               },
+--               experimentalPostfixCompletions = true,
+--               completeUnimported = true, -- Add this
+--               symbolMatcher = "fuzzy",   -- Add this
+--               buildFlags = { "-tags=integration" },
+--               deepCompletion = true,     -- Add this
+--               matcher = "fuzzy",         -- Add this
+--               staticcheck = true,
+--               completionDocumentation = true,
+--               usePlaceholders = true,
+--               semanticTokens = true,
+--               codelenses = {
+--                 gc_details = true,
+--                 generate = true,
+--                 regenerate_cgo = true,
+--                 test = true,
+--                 tidy = true,
+--                 upgrade_dependency = true,
+--                 vendor = true,
+--               },
+--             },
+--           },
+--         },
+--       }
+--     },
+--     config = function(_, opts)
+--       local capabilities = require('blink.cmp').get_lsp_capabilities()
+--       local lspconfig = require('lspconfig')
+--
+--       -- Go setup
+--       lspconfig.gopls.setup({
+--         capabilities = capabilities,
+--         settings = opts.servers.gopls.settings, -- Pass only the settings here
+--         -- Flags to ensure gopls provides full completions
+--         flags = {
+--           debounce_text_changes = 150,
+--         },
+--         filetypes = { "go", "gomod", "gowork", "gotmpl" },
+--         root_dir = lspconfig.util.root_pattern("go.work", "go.mod", ".git"),
+--         on_attach = function(client, bufnr)
+--           print("gopls attached to buffer:", bufnr)
+--           print("gopls capabilities:", vim.inspect(client.server_capabilities))
+--           vim.bo[bufnr].omnifunc = 'v:lua.vim.lsp.omnifunc'
+--
+--           vim.keymap.set('n', 'gd', vim.lsp.buf.definition, { buffer = bufnr })
+--           vim.keymap.set('n', 'K', vim.lsp.buf.hover, { buffer = bufnr })
+--           vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, { buffer = bufnr })
+--           vim.keymap.set('i', '<C-k>', vim.lsp.buf.signature_help, { buffer = bufnr })
+--         end,
+--       })
+--       -- Add this diagnostic autocmd
+--       vim.api.nvim_create_autocmd("BufEnter", {
+--         pattern = "*.go",
+--         callback = function()
+--           local clients = vim.lsp.get_active_clients()
+--           for _, client in ipairs(clients) do
+--             print("Active LSP client:", client.name)
+--           end
+--         end,
+--       })
+--
+--       -- vim.lsp.config('lua_ls', {
+--       lspconfig.lua_ls.setup({
+--         capabilities = capabilities,
+--         on_init = function(client)
+--           if client.workspace_folders then
+--             local path = client.workspace_folders[1].name
+--             if path ~= vim.fn.stdpath('config') and (vim.uv.fs_stat(path .. '/.luarc.json') or vim.uv.fs_stat(path .. '/.luarc.jsonc')) then
+--               return
+--             end
+--           end
+--
+--           client.config.settings.Lua = vim.tbl_deep_extend('force', client.config.settings.Lua or {}, {
+--             runtime = {
+--               -- Tell the language server which version of Lua you're using
+--               -- (most likely LuaJIT in the case of Neovim)
+--               version = 'LuaJIT'
+--             },
+--             -- Make the server aware of Neovim runtime files
+--             workspace = {
+--               checkThirdParty = false,
+--               library = {
+--                 vim.env.VIMRUNTIME
+--               }
+--             }
+--           })
+--         end,
+--       })
+--
+--       vim.api.nvim_create_autocmd('LspAttach', {
+--         callback = function(args)
+--           local client = vim.lsp.get_client_by_id(args.data.client_id)
+--           if not client then return end
+--
+--           vim.keymap.set("n", "<leader>vd", function() vim.diagnostic.open_float() end, { buffer = args.buf })
+--
+--           if client:supports_method('textDocument/formatting') then
+--             -- Format the current buffer on save
+--             vim.api.nvim_create_autocmd('BufWritePre', {
+--               buffer = args.buf,
+--               callback = function()
+--                 vim.lsp.buf.format({ bufnr = args.buf, id = client.id })
+--                 -- Then ensure there's a final newline
+--                 local bufnr = args.buf
+--                 local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
+--                 local last_line = lines[#lines]
+--
+--                 if last_line and last_line ~= "" then
+--                   vim.api.nvim_buf_set_lines(bufnr, #lines, #lines, false, { "" })
+--                 end
+--               end,
+--             })
+--           end
+--         end
+--       })
+--     end,
+--   }
+-- }
+--
+
