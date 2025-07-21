@@ -1,12 +1,46 @@
-#!/bin/sh
+##!/usr/bin/env zsh
 
-session=$(find ~/code/dotfiles/ ~/projects-software/ ~/Documents/Programming/ ~/courses-software/ -mindepth 1 -maxdepth 2 -type d | fzf)
+#session=$(find ~/code/dotfiles/ ~/projects-software/ ~/Documents/Programming/ ~/courses-software/ ~/courses-software/personal/dataano-programming-learning-projects/ -mindepth 1 -maxdepth 2 -type d | fzf)
+#session_name=$(basename "$session" | tr . _)
+
+#if ! tmux has-session -t "$session_name" 2> /dev/null ; then 
+#    tmux new-session -s "$session_name" -c "$session" -d
+#fi
+
+#tmux switch-client -t "$session_name" 
+
+#!/usr/bin/env zsh
+
+# Debug: Print directories being searched
+echo "Searching in directories:" >&2
+echo "~/code/dotfiles/" >&2
+echo "~/projects-software/" >&2
+echo "~/Documents/Programming/" >&2
+echo "~/courses-software/" >&2
+echo "~/courses-software/personal/dataano-programming-learning-projects/" >&2
+
+# Debug: Check if directories exist
+for dir in ~/code/plugins/ ~/code/dotfiles/ ~/projects-software/ ~/Documents/Programming/ ~/courses-software/ ~/courses-software/personal/dataano-programming-learning-projects/; do
+    if [ -d "$dir" ]; then
+        echo "Directory exists: $dir" >&2
+    else
+        echo "Directory does not exist: $dir" >&2
+    fi
+done
+
+# Debug: Print the find command
+find_cmd="find ~/code/dotfiles/ ~/projects-software/ ~/Documents/Programming/ ~/courses-software/ ~/courses-software/personal/dataano-programming-learning-projects/ -mindepth 1 -maxdepth 2 -type d"
+echo "Running command: $find_cmd" >&2
+
+session=$(eval $find_cmd | fzf)
 session_name=$(basename "$session" | tr . _)
+
+# Debug: Print session info
+echo "Selected session: $session" >&2
+echo "Session name: $session_name" >&2
 
 if ! tmux has-session -t "$session_name" 2> /dev/null ; then 
     tmux new-session -s "$session_name" -c "$session" -d
 fi
 
 tmux switch-client -t "$session_name"
-
-

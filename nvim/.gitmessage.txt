@@ -1,0 +1,11 @@
+type(optional scope): <description>
+
+[optional body]
+
+[optional footer(s)]
+
+# type: type of commit 
+# scope: short description of a section of the code base enclosed in parenthesis followed by colon and a space
+# description: short one line description of the code
+# body: large description with extra context
+# footer: fixes issue #3 // example - more issue references

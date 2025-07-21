@@ -8,7 +8,7 @@ return require('packer').startup(function(use)
   use 'wbthomason/packer.nvim'
 
   use {
-	  'nvim-telescope/telescope.nvim', tag = '0.1.1',
+	  'nvim-telescope/telescope.nvim', tag = '0.1.4',
 	  -- or                            , branch = '0.1.x',
 	  requires = { {'nvim-lua/plenary.nvim'} }
   }
@@ -17,6 +17,13 @@ return require('packer').startup(function(use)
 
   vim.cmd('colorscheme rose-pine') 
 
+  use ('joerdav/templ.vim')
+
+  -- Ensure .templ files are recognized as templ filetype
+  vim.cmd([[ autocmd BufRead,BufNewFile *.templ set filetype=templ ]])
+
+
+  use ('voldikss/vim-floaterm')
   use('nvim-treesitter/nvim-treesitter', {run = ':TSUpdate'})
   use('sunaku/vim-dasht')
   use('nvim-treesitter/playground')

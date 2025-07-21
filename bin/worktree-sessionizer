@@ -1,28 +1,96 @@
 #!/usr/bin/env zsh
+#
+# This script assumes a structure of a root directory with the clone repo and then worktrees in the project dir or some subdir
 
-search_worktrees() {
+find_project_root() {
     local current_dir=$(pwd)
-    local parent_dir=$(dirname "$current_dir")
+    local project_root=""
 
-    find "$current_dir" "$parent_dir" -maxdepth 1 -type d -name "worktrees" -prune -o -type d -print
+    while [[ "$current_dir" != "/" ]]; do 
+        if [[ -d "$current_dir/worktrees" ]]; then 
+            project_root="$current_dir"
+            break
+        fi
+        current_dir=$(dirname "$current_dir")
+    done
+
+    if [[ -z "$project_root" ]]; then 
+        project_root=$(pwd)
+    fi 
+
+    echo "$project_root"
 } 
 
-# Search for worktrees and select one using fzf
-worktree=$(search_worktrees | fzf)
-
-if [ -n "$worktree" ]; then 
-    # Extract the worktree name from the selected path
-    worktree_name=$(basename "$worktree")
-
-    # Check if a tmux window with the same name already exists 
-    if ! tmux list-windows -F '#{window_name}' | grep -q "^$worktree_name\$"; then
-        # create a new tmux window with the worktree name and change to the worktree directory
-        tmux new-window -n "$worktree_name" -c "$worktree"
+abbreviate_path() {
+    local path="$1"
+    local abbreviated_path=""
+    local dirs=("${(@s:/:)path}")
+    
+    if [[ ${#dirs} -le 3 ]]; then
+        abbreviated_path="$path"
     else
-        # if a window with the same name exists switch to that window 
-        tmux select-window -t "$worktree_name"
+        abbreviated_path="${dirs[1]}/.../${dirs[-2]}/${dirs[-1]}"
     fi
+    
+    echo "$abbreviated_path"
+}
 
-    # Set focus to the newly created or selected window
-    tmux select_window -t "$worktree_name"
+project_root=$(find_project_root)
+selected_dir=$(find "$project_root" -maxdepth 3 -type d | while read -r dir; do
+    abbreviated_dir=$(abbreviate_path "$dir")
+    echo "$dir | $abbreviated_dir"
+done | fzf --with-nth 2.. --delimiter ' | ' --preview 'echo {}' --preview-window up:1)
+
+if [[ -z "$selected_dir" ]]; then
+    echo "No directory selected"
+    exit 0
 fi
+
+selected_dir=$(echo "$selected_dir" | cut -d' ' -f1)
+window_name=$(basename "$selected_dir" | tr . _)
+
+if ! tmux list-windows -F '#{window_name}' | grep -q "^$window_name\$" 2> /dev/null ; then
+    tmux new-window -n "$window_name" -c "$selected_dir"
+fi
+
+tmux select-window -t "$window_name"
+
+# Below is a really interesting different script to preview the tree structure of projects
+##!/usr/bin/env zsh
+##
+## This script assumes a structure of a root directory with the clone repo and then worktrees in the project dir or some subdir
+
+#find_project_root() {
+#    local current_dir=$(pwd)
+#    local project_root=""
+
+#    while [[ "$current_dir" != "/" ]]; do 
+#        if [[ -d "$current_dir/worktrees" ]]; then 
+#            project_root="$current_dir"
+#            break
+#        fi
+#        current_dir=$(dirname "$current_dir")
+#    done
+
+#    if [[ -z "$project_root" ]]; then 
+#        project_root=$(pwd)
+#    fi 
+
+#    echo "$project_root"
+#} 
+
+#project_root=$(find_project_root)
+#selected_dir=$(tree -d -L 3 "$project_root" | fzf --preview 'tree -d {}' --preview-window=right:50%)
+
+#if [[ -z "$selected_dir" ]]; then
+#    echo "No directory selected"
+#    exit 0
+#fi
+
+#window_name=$(basename "$selected_dir" | tr . _)
+
+#if ! tmux list-windows -F '#{window_name}' | grep -q "^$window_name\$" 2> /dev/null ; then
+#    tmux new-window -n "$window_name" -c "$selected_dir"
+#fi
+
+#tmux select-window -t "$window_name"

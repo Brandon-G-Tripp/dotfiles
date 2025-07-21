@@ -1,5 +1,11 @@
 -- leader is mapped to space, keymap in normal mode "n" leader pv executes vim.cmd.Ex (explore)
 vim.g.mapleader = " "
+
+-- Jupyter notebook setup 
+vim.g.python_host_prog = 'jupyter'
+vim.g.python3_host_prog = '/usr/local/bin/python3'
+
+
 -- leader pv for file tree
 vim.keymap.set("n", "<leader>pv", vim.cmd.Ex)
 -- exiting insert mode 
@@ -25,12 +31,17 @@ vim.keymap.set("n", "N", "Nzzzv")
 
 -- greatest remap ever 
 vim.keymap.set("x", "<leader>p", "\"_dP")
+vim.keymap.set("x", "<leader>P", "\"_d\"0P")
+
 
 -- leader y for system clipboard yank or just y for in vim 
 vim.keymap.set("n", "<leader>y", "\"+y")
 vim.keymap.set("v", "<leader>y", "\"+y")
+-- leader p for put from system clipboard
+vim.keymap.set("v", "<leader>p", "\"+p")
 vim.keymap.set("n", "<leader>Y", "\"+Y")
 
+-- ???
 vim.keymap.set("n", "<leader>d", "\"_d")
 vim.keymap.set("v", "<leader>d", "\"_d")
 
